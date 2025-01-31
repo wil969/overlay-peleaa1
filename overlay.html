@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overlay de Peleas</title>
+    <style>
+        :root {
+            --primary-color: maroon;
+            --secondary-color: darkred;
+            --text-color: white;
+            --highlight-color: yellow;
+            --blue-color: blue;
+            --white-color: white;
+            --background-color: black; /* Cambié a negro para el fondo */
+        }
+        body {
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 10px;
+        }
+        .header {
+            font-size: 16px;
+            background: var(--background-color); /* Fondo negro */
+            color: var(--highlight-color);
+            padding: 8px;
+            width: 90%;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .fight-info {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            background: var(--secondary-color);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .timer {
+            font-size: 40px;
+            font-weight: bold;
+            color: var(--highlight-color);
+            background: var(--background-color);
+            padding: 8px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px var(--highlight-color);
+        }
+        .names-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 5px; /* Ajusté para acercar más los nombres al temporizador */
+        }
+        .name-blue, .name-white {
+            padding: 5px 10px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            width: 40%;
+        }
+        .name-blue {
+            background: var(--blue-color);
+            color: var(--text-color);
+        }
+        .name-white {
+            background: var(--white-color);
+            color: black;
+        }
+        .live {
+            color: var(--highlight-color);
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .input-container {
+            margin-top: 10px;
+        }
+        input, button {
+            margin: 3px;
+            padding: 6px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background: var(--primary-color);
+            color: var(--highlight-color);
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: var(--secondary-color);
+        }
+        @media (max-width: 600px) {
+            .header, .fight-info, .names-container {
+                font-size: 12px;
+                width: 95%;
+            }
+            .timer {
+                font-size: 30px;
+            }
+            input, button {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" id="header">PELEA #33 - COLISEO GALLISTICO SANTIAGO - FECHA: 22-01-2025</div>
+        <div class="fight-info">
+            <div id="data1">M: 08 P: 3.07.9 PL: 236191</div>
+            <div id="data2">M: 08 P: 3.08.1 PL: 237722</div>
+        </div>
+        <div class="timer-container">
+            <div class="timer" id="timer">10:00</div>
+        </div>
+        <div class="names-container">
+            <span class="name-blue" id="name1">RAMON FDEZ PUYAL</span>
+            <span class="name-white" id="name2">GALLERIA WILMERY</span>
+        </div>
+        <div class="live">🔴 EN VIVO</div>
+        <div class="input-container">
+            <input type="text" id="fightNumber" placeholder="Número de pelea" required>
+            <input type="text" id="fightDate" placeholder="Fecha" required>
+            <input type="text" id="coliseoName" placeholder="Nombre del coliseo" required>
+            <input type="text" id="fighter1" placeholder="Nombre del gallo azul" required>
+            <input type="text" id="fighter2" placeholder="Nombre del gallo blanco" required>
+            <input type="text" id="stats1" placeholder="Datos gallo azul" required>
+            <input type="text" id="stats2" placeholder="Datos gallo blanco" required>
+            <input type="text" id="timeInput" placeholder="Tiempo (min:seg, máx 10:00)" required>
+            <button onclick="updateFightInfo()">Actualizar</button>
+        </div>
+        <div class="controls">
+            <button onclick="startTimer()">Iniciar</button>
+            <button onclick="pauseTimer()">Pausar</button>
+            <button onclick="resetTimer()">Reset</button>
+        </div>
+    </div>
+    <script>
+        let time = 600;
+        let interval;
+        let isPaused = false;
+
+        function startTimer() {
+            if (isPaused) {
+                isPaused = false;
+                interval = setInterval(updateTimer, 1000);
+            } else {
+                clearInterval(interval);
+                interval = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            isPaused = true;
+            clearInterval(interval);
+        }
+
+        function resetTimer() {
+            clearInterval(interval);
+            time = 600;
+            document.getElementById('timer').textContent = "10:00";
+            isPaused = false;
+        }
+
+        function updateTimer() {
+            if (time > 0) {
+                time--;
+                let minutes = Math.floor(time / 60);
+                let seconds = time % 60;
+                document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                clearInterval(interval);
+            }
+        }
+
+        function updateFightInfo() {
+            const fightNumber = document.getElementById('fightNumber').value;
+            const fightDate = document.getElementById('fightDate').value;
+            const coliseoName = document.getElementById('coliseoName').value;
+            const fighter1 = document.getElementById('fighter1').value;
+            const fighter2 = document.getElementById('fighter2').value;
+            const stats1 = document.getElementById('stats1').value;
+            const stats2 = document.getElementById('stats2').value;
+            const timeInput = document.getElementById('timeInput').value;
+
+            if (fightNumber && fightDate && coliseoName && fighter1 && fighter2 && stats1 && stats2 && timeInput) {
+                document.getElementById('header').textContent = `PELEA #${fightNumber} - ${coliseoName} - FECHA: ${fightDate}`;
+                document.getElementById('name1').textContent = fighter1;
+                document.getElementById('name2').textContent = fighter2;
+                document.getElementById('data1').textContent = stats1;
+                document.getElementById('data2').textContent = stats2;
+
+                const [min, sec] = timeInput.split(':');
+                time = parseInt(min) * 60 + parseInt(sec);
+                document.getElementById('timer').textContent = `${min}:${sec}`;
+                clearInterval(interval);
+                interval = setInterval(updateTimer, 1000);
+            } else {
+                alert('Por favor, complete todos los campos');
+            }
+        }
+    </script>
+</body>
+</html>
+
